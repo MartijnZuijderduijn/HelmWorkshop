@@ -46,6 +46,8 @@ Helm comes with a CLI that is used to interact with charts by creating & validat
 The result of a Helm install is a Release. You can see it as a singular instance of your Helm Chart. These are all the plain Kubernetes resources that are running inside your cluster like Deployments, Services, Ingresses or any other Kubernetes resource. To be able to track the status of the release, Helm also installs some meta information about the Release inside you cluster in the form a Kubernetes Secret. This secret contains information about each individual install and upgrade event that occured. This enables Helm to rollback to previous revisions of the Release.
 
 ## Creating a Helm chart
+Let's start exploring helm!
+
 We will be using [Kubernetes For Everyone](https://github.com/Wesbest/KubernetesForEveryone) course as an example of an application we want to deploy for different environments. 
 
 Create a new helm chart by running the following command:
@@ -116,7 +118,7 @@ NOTES:
   kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
 ```
 
-When getting the deployments you should see 2 seperate dpeloyments
+When getting the deployments you should see 2 seperate deployments
 ```sh
 $ kubectl get deployments
 NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
@@ -124,9 +126,88 @@ customer1-release-k8sdemo   1/1     1            1           81m
 customer2-release-k8sdemo   1/1     1            1           69m
 ```
 
+Let's imagine we have third customer that want's to use our app but they have some scaling requirements.
+We can use the same boilerplate chart to provide a different number of replicas for the deployment.
+We can quickly inspect the values we can pass to the chart by running:
+```sh
+$ helm show values ./k8sdemo
+# Default values for k8sdemo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+...
+```
+
+as you can see we can supply a value for the number of replicas.
+Lets create a new release for our thirs customer and supply the desired amount of replicas.
+
+```sh
+$ helm upgrade --install customer3-release ./k8sdemo --set replicaCount=3 
+Release "customer3-release" does not exist. Installing it now.
+
+NAME: customer3-release
+...
+```
+
+if we get the pods...
+```sh
+$ kubectl get pods
+NAME                                         READY   STATUS    RESTARTS   AGE
+customer1-release-k8sdemo-5db97d748c-dsz6m   1/1     Running   0          4h34m
+customer2-release-k8sdemo-667665f4b4-vn74x   1/1     Running   0          4h23m
+customer3-release-k8sdemo-568597d6f-9frjm    1/1     Running   0          63s
+customer3-release-k8sdemo-568597d6f-9sm2c    1/1     Running   0          63s
+customer3-release-k8sdemo-568597d6f-pcz4j    1/1     Running   0          63s
+```
+
+we see we got the desired results without having to change any Kubernetes manifest files!
+
+Clean up this excersice by deleting all releases
+```sh
+$ helm delete customer1-release
+$ helm delete customer2-release
+$ helm delete customer3-release
+```
+
+## Upgrading a Helm Chart 
+Applications are dynamic things in code but also the way they are deployed. 
+Create a Release using the k8sdemo chart using the name "customer-api-prod" using the defaults.
+To view all releases in this namespace & cluster:
+```sh
+$ helm list
+```
+
+After a while we find out that we have some changing requirements for our application.
+We want to have some redundancy for our pod so we have to worry less about outages of our application also we would like to have developers to ingress to our customer api application. Maybe we also want to specify the desired resources for our deployment so Kubernetes is able to schedule our pods better.
+
+Luckily our chart has all the dynamic values to be able to support all these requirements.
+If you inpect the `values.yaml` you can see that there are loads of options we can pass to our templates.
+
+for now we are interested in the following configuration:
+```yaml
+replicaCount: 1
+...
+
+ingress:
+  enabled: false
+...
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+```
+
+
 
 
 For now remove everything in the `templates` directory except for the `tests` directory, the `_helpers.tpl` file and the `NOTES.txt` file.
 Also empty the `values.yaml` file. We will be adding back the relevant pieces during the following excersices.
-
-## 
