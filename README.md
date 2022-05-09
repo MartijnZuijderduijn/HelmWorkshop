@@ -18,9 +18,10 @@ Kubernetes objects are challenging to manage. With helpful tools, the Kubernetes
 
 Helm keeps track of the versioned history of every chart installation and change. Rolling back to a previous version or upgrading to a newer version is completed with comprehensible commands.
 
-### How does Helm work
+### How does Helm work?
+![how does Helm work](/images/helm-overview.png)
 
-
+Helm has a number of moving pieces. 
 
 ## Creating a Helm chart
 We will be using [Kubernetes For Everyone](https://github.com/Wesbest/KubernetesForEveryone) course as an example of an application we want to deploy for different environments. 
