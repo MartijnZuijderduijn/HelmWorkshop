@@ -7,6 +7,20 @@ Make sure you've installed the latest version of [Minikube](https://minikube.sig
 1. We will be creating resources on your local filesystem so you might want to reserve a directory somewhere to use as a working directory during the exercises.
 
 ## What is Helm
+Helm is three things. It is a Packaging system, Configuration management tool and Templating engine for Kubernetes manifest files.
+
+If Kubernetes were an operating system, Helm would be the package manager. Ubuntu uses apt, CentOS uses yum, and Kubernetes uses Helm. If kubernetes were a website, Helm would be the template engine not unlike you can use ASP.net to [template html pages](https://docs.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-6.0&tabs=visual-studio#the-home-page). 
+
+Helm makes it easy to manage different configurations for an application or to package your own set of kubernetes manifests and make it available to other teams or use it as a build artifact.
+
+### Why do I need helm
+Kubernetes objects are challenging to manage. With helpful tools, the Kubernetes learning curve becomes smooth and manageable. Helm automates maintenance of YAML manifests for Kubernetes objects by packaging information into charts and advertises them to a Kubernetes cluster.
+
+Helm keeps track of the versioned history of every chart installation and change. Rolling back to a previous version or upgrading to a newer version is completed with comprehensible commands.
+
+### How does Helm work
+
+
 
 ## Creating a Helm chart
 We will be using [Kubernetes For Everyone](https://github.com/Wesbest/KubernetesForEveryone) course as an example of an application we want to deploy for different environments. 
@@ -77,6 +91,14 @@ NOTES:
   export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
+```
+
+When getting the deployments you should see 2 seperate dpeloyments
+```sh
+$ kubectl get deployments
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+customer1-release-k8sdemo   1/1     1            1           81m
+customer2-release-k8sdemo   1/1     1            1           69m
 ```
 
 
