@@ -21,7 +21,29 @@ Helm keeps track of the versioned history of every chart installation and change
 ### How does Helm work?
 ![how does Helm work](/images/helm-overview.png)
 
-Helm has a number of moving pieces. 
+Helm has a number of moving pieces:
+- Go templates for yaml files
+
+To make the configuration of a set of Kubernetes manifests dynamic, Helm has a set of [Go Templates](https://blog.gopheracademy.com/advent-2017/using-go-templates/). You can create flags, loops and other templating functions to dynamically build up your kubernetes manifests.
+
+- A Package containing Go templates and a set of default values
+
+Helm bundles a set of templates together inside a package called a Chart. Alongside the templates a Chart also contains a `values.yaml` file that contain the default values the chart should be installed with and a `Chart.yaml` containing some information about the chart like the name, version and maybe a list of dependend charts this chart needs.
+
+- Optionally a Chart Repository
+
+Helm is a packaging tool and you can package and push/pull your charts to and from a chart repository. 
+Helm's equivalent is [Artifact Hub](https://artifacthub.io/packages/search?kind=0) but you can also host yourt own repository.
+You do not actually have to use this feature. Helm is perfectly capable in deploying your local "unpackaged" charts. 
+It becomes relevant if you want to use publicly available charts, use these as a dependency for ypour own chart or want to distribute your own chart to other teams.
+
+- A CLI Tool used to interact with charts and kubernetes clusters
+
+Helm comes with a CLI that is used to interact with charts by creating & validating Charts, managing Chart repositories and pulling from them and installing, upgrading and potentially rolling back of a so called release of a chart on a target kubernetes cluster. They way Helm installs a Chart on a cluster is using the configuration file of kubernetes normally located at `~/.kube/config`. It takes the current context if not specified, parses the templates in the chart using the default `values.yaml` and any other override `.yaml` files and applying the resulting plain yaml manifests on the Kubernetes api. 
+
+- A Release inside your kubernetes cluster
+
+The result of a Helm install is a Release. You can see it as a singular instance of your Helm Chart. These are all the plain Kubernetes resources that are running inside your cluster like Deployments, Services, Ingresses or any other Kubernetes resource. To be able to track the status of the release, Helm also installs some meta information about the Release inside you cluster in the form a Kubernetes Secret. This secret contains information about each individual install and upgrade event that occured. This enables Helm to rollback to previous revisions of the Release.
 
 ## Creating a Helm chart
 We will be using [Kubernetes For Everyone](https://github.com/Wesbest/KubernetesForEveryone) course as an example of an application we want to deploy for different environments. 
