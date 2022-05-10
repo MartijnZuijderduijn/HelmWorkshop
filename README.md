@@ -247,10 +247,16 @@ clean up by deleting the release
 Up until now we have been using the default boilerblate chart to explore the basics of installing and upgrading releases. 
 In this exercise we will be exploring building our worn chart using the GO templating language.   
 
-First remove everything in the `templates` directory except for the `tests` directory, the `_helpers.tpl` file and the `NOTES.txt` file.
-Also empty the `values.yaml` file.
-
 Lets pretend we want develop a Sonarqube Chart using the following design:
 
 ![Simple Design](/images/sonarqube-design.drawio.png)
 
+Create a new chart called `sonarqube`.
+After teh chart has been created, remove everything in the `templates` directory except for the `tests` directory, the `_helpers.tpl` file and the `NOTES.txt` file.
+Also empty the `values.yaml` and `NOTES.txt` files.
+
+in the `resources\` of this repo there are a number of plain kubernetes manifrest files, copy these to the `templates\` directory.
+
+## Further reading
+- [Helm Documentation](https://helm.sh/docs/)
+- [Artifact Hub](https://artifacthub.io/packages/search?kind=0)
