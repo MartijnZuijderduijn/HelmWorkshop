@@ -250,3 +250,7 @@ In this exercise we will be exploring building our worn chart using the GO templ
 First remove everything in the `templates` directory except for the `tests` directory, the `_helpers.tpl` file and the `NOTES.txt` file.
 Also empty the `values.yaml` file.
 
+Lets pretend we want develop a Sonarqube Chart using the following design:
+
+![Simple Design](/images/sonarqube-design.drawio.png)
+

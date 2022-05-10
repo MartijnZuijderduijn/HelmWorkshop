@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sonarqube
+  name: sonarqube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: sonarqube
+    spec:
+      containers:
+      - image: sonarqube:lts-community
+        name: sonarqube
+        ports:
+        - containerPort: 9000
+        resources: {}
+status: {}
