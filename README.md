@@ -48,8 +48,6 @@ The result of a Helm install is a Release. You can see it as a singular instance
 ## Creating a Helm chart
 Let's start exploring helm!
 
-We will be using [Kubernetes For Everyone](https://github.com/Wesbest/KubernetesForEveryone) course as an example of an application we want to deploy for different environments. 
-
 Create a new helm chart by running the following command:
 ```sh
 $ helm create k8sdemo
@@ -173,9 +171,9 @@ $ helm delete customer3-release
 ## Upgrading a Helm Chart 
 Applications are dynamic things in code but also the way they are deployed. 
 Create a Release using the k8sdemo chart using the name "customer-api-prod" using the defaults.
-To view all releases in this namespace & cluster:
+To view the status of a release run
 ```sh
-$ helm list
+$ helm status customer-api-prod
 ```
 
 After a while we find out that we have some changing requirements for our application.
@@ -206,8 +204,49 @@ resources: {}
   #   memory: 128Mi
 ```
 
+create a new `values.prod.yaml` file with the following content inthe `k8sdemo\` directory
 
+```yaml
+replicaCount: 2
 
+ingress:
+  enabled: true
 
-For now remove everything in the `templates` directory except for the `tests` directory, the `_helpers.tpl` file and the `NOTES.txt` file.
-Also empty the `values.yaml` file. We will be adding back the relevant pieces during the following excersices.
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+```
+
+upgrade the release by running
+```sh
+$ helm upgrade --install customer-api-prod ./k8sdemo -f ./k8sdemo/values.prod.yaml
+```
+
+take your time to explore the changes in kubernetes using `kubectl`
+
+if you run 
+```sh
+$ helm list
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION
+customer-api-prod       default         2               2022-05-10 09:01:53.306922 +0200 CEST   deployed        k8sdemo-0.1.0   1.16.0 
+```
+
+you can see that we are now ar revision 2.
+another way to view the revision is by running:
+```
+$ helm history customer-api-prod
+REVISION        UPDATED                         STATUS          CHART           APP VERSION     DESCRIPTION     
+1               Mon May  9 16:51:32 2022        superseded      k8sdemo-0.1.0   1.16.0          Install complete
+2               Tue May 10 09:01:53 2022        deployed        k8sdemo-0.1.0   1.16.0          Upgrade complete
+```
+
+clean up by deleting the release
+
+## Building our own helm chart
+Up until now we have been using the default boilerblate chart to explore the basics of installing and upgrading releases. 
+In this exercise we will be exploring building our worn chart using the GO templating language.   
+
+First remove everything in the `templates` directory except for the `tests` directory, the `_helpers.tpl` file and the `NOTES.txt` file.
+Also empty the `values.yaml` file.
+
