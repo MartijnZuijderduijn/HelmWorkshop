@@ -1,0 +1,21 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "sonarqube.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "sonarqube.labels" . | nindent 4 }}
+spec:
+  rules:
+    - host: sonarqube.local
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end -}}
